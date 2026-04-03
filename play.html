@@ -234,14 +234,6 @@
       margin-bottom: 10px;
     }
 
-    .result-writer {
-      font-size: 24px;
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
-      color: #1f6feb;
-    }
-
     .detail-block {
       margin-bottom: 24px;
       border: 2px solid #ddd;
@@ -340,7 +332,7 @@
 
   <div id="startScreen" class="screen active">
     <div class="card">
-      <h1>Darts Scorebord - Losse legs</h1>
+      <h1>Darts scorebord - 501</h1>
       <p style="font-size:22px;">2 spelers - telkens 1 leg</p>
 
       <div class="row">
@@ -412,8 +404,7 @@
     <div class="card">
       <div id="resultTitle" class="result-big">Speler wint</div>
       <div id="resultLoser" class="result-small">Speler verliest</div>
-      <div id="resultScore" class="result-score">Legs: 0 - 0</div>
-      <div id="resultWriter" class="result-writer">Speler X schrijft de volgende wedstrijd</div>
+      <div id="resultScore" class="result-score">Speler 1 1 - 0 Speler 2</div>
 
       <div class="button-group">
         <button class="btn secondary" onclick="showDetails()">Detail</button>
@@ -457,7 +448,6 @@
     let darts = [0, 0];
     let currentPlayer = 0;
     let startingPlayer = 0;
-    let writerPlayer = 1;
 
     let history = [];
     let redoHistory = [];
@@ -494,8 +484,6 @@
       currentLegNumber = 1;
 
       startingPlayer = playerIndex;
-      writerPlayer = playerIndex === 0 ? 1 : 0;
-
       startNewLeg(startingPlayer);
       showScreen("gameScreen");
     }
@@ -517,7 +505,6 @@
     function rematch() {
       const nextStarter = startingPlayer === 0 ? 1 : 0;
       startingPlayer = nextStarter;
-      writerPlayer = nextStarter === 0 ? 1 : 0;
       currentLegNumber += 1;
       startNewLeg(nextStarter);
       showScreen("gameScreen");
@@ -715,9 +702,7 @@
       document.getElementById("resultTitle").textContent = players[winnerIndex] + " wint";
       document.getElementById("resultLoser").textContent = players[loserIndex] + " verliest";
       document.getElementById("resultScore").textContent =
-        "Legs: " + totalLegs[0] + " - " + totalLegs[1];
-      document.getElementById("resultWriter").textContent =
-        players[writerPlayer] + " schrijft de volgende wedstrijd";
+        players[0] + " " + totalLegs[0] + " - " + totalLegs[1] + " " + players[1];
 
       showScreen("resultScreen");
     }
