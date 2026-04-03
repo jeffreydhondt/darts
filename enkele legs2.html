@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darts Scorebord - Losse legs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #111;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    h1, h2, h3, p {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    label {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 16px;
+      font-size: 24px;
+      border: 2px solid #bbb;
+      border-radius: 12px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      background: #1f6feb;
+      color: white;
+      min-width: 140px;
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+    }
+
+    .btn.secondary {
+      background: #666;
+    }
+
+    .btn.green {
+      background: #148a3b;
+    }
+
+    .btn.red {
+      background: #b42318;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .leg-info {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .active-player-box {
+      background: #eef5ff;
+      border: 4px solid #1f6feb;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .active-player-name {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .active-player-score {
+      font-size: 110px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .active-player-info {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .turn-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 20px;
+      text-align: center;
+      border: 2px solid #ddd;
+    }
+
+    .turn-player {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .info-text {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .other-player-box {
+      background: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .other-player-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .other-player-name {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .other-player-score {
+      font-size: 54px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .other-player-info {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .status {
+      min-height: 36px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .status.error {
+      color: #b42318;
+    }
+
+    .status.success {
+      color: #148a3b;
+    }
+
+    .status.info {
+      color: #1f6feb;
+    }
+
+    .result-big {
+      font-size: 42px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .result-score {
+      font-size: 34px;
+      text-align: center;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+
+    .result-small {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .result-writer {
+      font-size: 24px;
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #1f6feb;
+    }
+
+    .detail-block {
+      margin-bottom: 24px;
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .detail-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    th {
+      background: #eef5ff;
+      font-weight: bold;
+    }
+
+    .detail-note {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 900px) {
+      .active-player-score {
+        font-size: 140px;
+      }
+
+      .other-player-score {
+        font-size: 70px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .screen {
+        padding: 10px;
+      }
+
+      .card {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .active-player-name {
+        font-size: 30px;
+      }
+
+      .active-player-score {
+        font-size: 96px;
+      }
+
+      .active-player-info {
+        font-size: 22px;
+      }
+
+      .other-player-name {
+        font-size: 24px;
+      }
+
+      .other-player-score {
+        font-size: 48px;
+      }
+
+      .turn-player {
+        font-size: 24px;
+      }
+
+      .btn {
+        width: 100%;
+        font-size: 18px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="startScreen" class="screen active">
+    <div class="card">
+      <h1>Darts Scorebord - Losse legs</h1>
+      <p style="font-size:22px;">2 spelers - telkens 1 leg</p>
+
+      <div class="row">
+        <div class="col">
+          <label for="player1">Naam speler 1</label>
+          <input type="text" id="player1" placeholder="Speler 1">
+        </div>
+        <div class="col">
+          <label for="player2">Naam speler 2</label>
+          <input type="text" id="player2" placeholder="Speler 2">
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn green" onclick="saveNames()">Verder</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bullScreen" class="screen">
+    <div class="card">
+      <h1>Wie was het dichtst bij de Bull?</h1>
+      <div class="button-group">
+        <button id="bullBtn1" class="btn" onclick="chooseStarter(0)">Speler 1</button>
+        <button id="bullBtn2" class="btn" onclick="chooseStarter(1)">Speler 2</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameScreen" class="screen">
+    <div class="card">
+      <div id="legInfo" class="leg-info">Leg 1</div>
+
+      <div class="active-player-box">
+        <div id="activePlayerName" class="active-player-name">Speler 1</div>
+        <div id="activePlayerScore" class="active-player-score">501</div>
+        <div id="activePlayerInfo1" class="active-player-info">Pijlen: 0</div>
+        <div id="activePlayerInfo2" class="active-player-info">Gem: 0.00 | Legs: 0</div>
+      </div>
+
+      <div class="turn-box">
+        <div class="info-text">Aan de beurt</div>
+        <div id="currentPlayerText" class="turn-player">Speler 1</div>
+        <div class="info-text">Geef de score van de beurt in</div>
+        <input type="number" id="turnScoreInput" min="0" max="180" placeholder="bv. 60" onkeydown="handleEnter(event)">
+      </div>
+
+      <div class="button-group">
+        <button class="btn green" onclick="submitScore()">Enter</button>
+        <button class="btn secondary" onclick="bustedTurn()">Busted</button>
+        <button class="btn secondary" onclick="undoTurn()">Undo</button>
+        <button class="btn secondary" onclick="redoTurn()">Redo</button>
+        <button class="btn red" onclick="restartMatch()">Start opnieuw</button>
+      </div>
+
+      <div id="statusMessage" class="status"></div>
+
+      <div class="other-player-box">
+        <div class="other-player-title">Andere speler</div>
+        <div id="otherPlayerName" class="other-player-name">Speler 2</div>
+        <div id="otherPlayerScore" class="other-player-score">501</div>
+        <div id="otherPlayerInfo1" class="other-player-info">Pijlen: 0</div>
+        <div id="otherPlayerInfo2" class="other-player-info">Gem: 0.00 | Legs: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultScreen" class="screen">
+    <div class="card">
+      <div id="resultTitle" class="result-big">Speler wint</div>
+      <div id="resultLoser" class="result-small">Speler verliest</div>
+      <div id="resultScore" class="result-score">Legs: 0 - 0</div>
+      <div id="resultWriter" class="result-writer">Speler X schrijft de volgende wedstrijd</div>
+
+      <div class="button-group">
+        <button class="btn secondary" onclick="showDetails()">Detail</button>
+        <button class="btn green" onclick="rematch()">Rematch</button>
+        <button class="btn red" onclick="restartMatch()">Start opnieuw</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="detailScreen" class="screen">
+    <div class="card">
+      <h1>Detail van alle legs</h1>
+      <div class="detail-note">Overzicht van alle gespeelde legs tot nu toe</div>
+      <div id="detailContent"></div>
+
+      <div class="button-group">
+        <button class="btn secondary" onclick="showScreen('resultScreen')">Terug</button>
+        <button class="btn green" onclick="rematch()">Rematch</button>
+        <button class="btn red" onclick="restartMatch()">Start opnieuw</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const START_SCORE = 501;
+
+    const VALID_CHECKOUTS = new Set([
+      170,167,164,161,160,158,157,156,155,154,153,152,151,150,149,148,147,146,145,144,
+      143,142,141,140,139,138,137,136,135,134,133,132,131,130,129,128,127,126,125,124,
+      123,122,121,120,119,118,117,116,115,114,113,112,111,110,109,108,107,106,105,104,
+      103,102,101,100,99,98,97,96,95,94,93,92,91,90,89,88,87,86,85,84,83,82,81,80,79,78,
+      77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,59,58,57,56,55,54,53,52,51,
+      50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,
+      23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2
+    ]);
+
+    let players = ["Speler 1", "Speler 2"];
+    let totalLegs = [0, 0];
+
+    let scores = [START_SCORE, START_SCORE];
+    let darts = [0, 0];
+    let currentPlayer = 0;
+    let startingPlayer = 0;
+    let writerPlayer = 1;
+
+    let history = [];
+    let redoHistory = [];
+    let currentLegRows = [];
+    let allLegs = [];
+
+    let lastWinnerIndex = 0;
+    let currentLegNumber = 1;
+    let gameFinished = false;
+
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function saveNames() {
+      const p1 = document.getElementById("player1").value.trim();
+      const p2 = document.getElementById("player2").value.trim();
+
+      players[0] = p1 !== "" ? p1 : "Speler 1";
+      players[1] = p2 !== "" ? p2 : "Speler 2";
+
+      document.getElementById("bullBtn1").textContent = players[0];
+      document.getElementById("bullBtn2").textContent = players[1];
+
+      showScreen("bullScreen");
+    }
+
+    function chooseStarter(playerIndex) {
+      totalLegs = [0, 0];
+      allLegs = [];
+      currentLegNumber = 1;
+
+      startingPlayer = playerIndex;
+      writerPlayer = playerIndex === 0 ? 1 : 0;
+
+      startNewLeg(startingPlayer);
+      showScreen("gameScreen");
+    }
+
+    function startNewLeg(startPlayer) {
+      scores = [START_SCORE, START_SCORE];
+      darts = [0, 0];
+      currentPlayer = startPlayer;
+      history = [];
+      redoHistory = [];
+      currentLegRows = [];
+      gameFinished = false;
+
+      updateGameScreen();
+      setStatus(players[currentPlayer] + " begint.", "info");
+      clearInput();
+    }
+
+    function rematch() {
+      const nextStarter = startingPlayer === 0 ? 1 : 0;
+      startingPlayer = nextStarter;
+      writerPlayer = nextStarter === 0 ? 1 : 0;
+      currentLegNumber += 1;
+      startNewLeg(nextStarter);
+      showScreen("gameScreen");
+    }
+
+    function getAverage(playerIndex) {
+      if (darts[playerIndex] === 0) {
+        return 0;
+      }
+      return ((START_SCORE - scores[playerIndex]) / darts[playerIndex]) * 3;
+    }
+
+    function updateGameScreen() {
+      const otherPlayer = currentPlayer === 0 ? 1 : 0;
+
+      document.getElementById("legInfo").textContent = "Leg " + currentLegNumber;
+      document.getElementById("currentPlayerText").textContent = players[currentPlayer];
+
+      document.getElementById("activePlayerName").textContent = players[currentPlayer];
+      document.getElementById("activePlayerScore").textContent = scores[currentPlayer];
+      document.getElementById("activePlayerInfo1").textContent = "Pijlen: " + darts[currentPlayer];
+      document.getElementById("activePlayerInfo2").textContent =
+        "Gem: " + getAverage(currentPlayer).toFixed(2) + " | Legs: " + totalLegs[currentPlayer];
+
+      document.getElementById("otherPlayerName").textContent = players[otherPlayer];
+      document.getElementById("otherPlayerScore").textContent = scores[otherPlayer];
+      document.getElementById("otherPlayerInfo1").textContent = "Pijlen: " + darts[otherPlayer];
+      document.getElementById("otherPlayerInfo2").textContent =
+        "Gem: " + getAverage(otherPlayer).toFixed(2) + " | Legs: " + totalLegs[otherPlayer];
+    }
+
+    function setStatus(message, type = "") {
+      const status = document.getElementById("statusMessage");
+      status.textContent = message;
+      status.className = "status";
+      if (type) {
+        status.classList.add(type);
+      }
+    }
+
+    function clearInput() {
+      const input = document.getElementById("turnScoreInput");
+      input.value = "";
+      input.focus();
+    }
+
+    function handleEnter(event) {
+      if (event.key === "Enter") {
+        submitScore();
+      }
+    }
+
+    function switchPlayer() {
+      currentPlayer = currentPlayer === 0 ? 1 : 0;
+      updateGameScreen();
+    }
+
+    function canCheckout(score) {
+      return VALID_CHECKOUTS.has(score);
+    }
+
+    function addLegRow(playerIndex, throwScore, oldScore) {
+      if (playerIndex === 0) {
+        currentLegRows.push({
+          p1Before: oldScore,
+          p1Throw: throwScore,
+          p2Before: "",
+          p2Throw: ""
+        });
+      } else {
+        currentLegRows.push({
+          p1Before: "",
+          p1Throw: "",
+          p2Before: oldScore,
+          p2Throw: throwScore
+        });
+      }
+    }
+
+    function submitScore() {
+      if (gameFinished) {
+        return;
+      }
+
+      const input = document.getElementById("turnScoreInput");
+      const value = input.value.trim();
+
+      if (value === "") {
+        setStatus("Geef een score in.", "error");
+        return;
+      }
+
+      const turnScore = Number(value);
+
+      if (!Number.isInteger(turnScore)) {
+        setStatus("Ongeldige invoer.", "error");
+        clearInput();
+        return;
+      }
+
+      if (turnScore < 0) {
+        setStatus("Score kan niet negatief zijn.", "error");
+        clearInput();
+        return;
+      }
+
+      if (turnScore > 180) {
+        setStatus("Maximale score is 180.", "error");
+        clearInput();
+        return;
+      }
+
+      const oldScore = scores[currentPlayer];
+      const newScore = oldScore - turnScore;
+
+      if (newScore < 0) {
+        setStatus("Deze score kan niet. Gebruik Busted voor beurt voorbij.", "error");
+        clearInput();
+        return;
+      }
+
+      if (newScore === 1) {
+        setStatus("Je mag niet op 1 uitkomen. Gebruik Busted.", "error");
+        clearInput();
+        return;
+      }
+
+      if (newScore === 0 && !canCheckout(oldScore)) {
+        setStatus("Deze score kan niet uitgegooid worden met dubbel-uit. Gebruik Busted.", "error");
+        clearInput();
+        return;
+      }
+
+      redoHistory = [];
+
+      history.push({
+        scores: [...scores],
+        darts: [...darts],
+        currentPlayer: currentPlayer,
+        currentLegRows: JSON.parse(JSON.stringify(currentLegRows)),
+        gameFinished: gameFinished
+      });
+
+      darts[currentPlayer] += 3;
+      scores[currentPlayer] = newScore;
+      addLegRow(currentPlayer, turnScore, oldScore);
+
+      updateGameScreen();
+
+      if (newScore === 0) {
+        finishLeg(currentPlayer);
+        clearInput();
+        return;
+      }
+
+      clearInput();
+      switchPlayer();
+      setStatus(players[currentPlayer] + " is aan de beurt.", "info");
+    }
+
+    function bustedTurn() {
+      if (gameFinished) {
+        return;
+      }
+
+      redoHistory = [];
+
+      history.push({
+        scores: [...scores],
+        darts: [...darts],
+        currentPlayer: currentPlayer,
+        currentLegRows: JSON.parse(JSON.stringify(currentLegRows)),
+        gameFinished: gameFinished
+      });
+
+      switchPlayer();
+      clearInput();
+      setStatus("Busted. " + players[currentPlayer] + " is aan de beurt.", "error");
+    }
+
+    function finishLeg(winnerIndex) {
+      gameFinished = true;
+      lastWinnerIndex = winnerIndex;
+
+      const loserIndex = winnerIndex === 0 ? 1 : 0;
+      totalLegs[winnerIndex] += 1;
+
+      allLegs.push({
+        legNumber: currentLegNumber,
+        winnerIndex: winnerIndex,
+        winnerName: players[winnerIndex],
+        rows: JSON.parse(JSON.stringify(currentLegRows))
+      });
+
+      document.getElementById("resultTitle").textContent = players[winnerIndex] + " wint";
+      document.getElementById("resultLoser").textContent = players[loserIndex] + " verliest";
+      document.getElementById("resultScore").textContent =
+        "Legs: " + totalLegs[0] + " - " + totalLegs[1];
+      document.getElementById("resultWriter").textContent =
+        players[writerPlayer] + " schrijft de volgende wedstrijd";
+
+      showScreen("resultScreen");
+    }
+
+    function undoTurn() {
+      if (history.length === 0 || gameFinished) {
+        setStatus("Er is geen vorige beurt om te herstellen.", "error");
+        return;
+      }
+
+      redoHistory.push({
+        scores: [...scores],
+        darts: [...darts],
+        currentPlayer: currentPlayer,
+        currentLegRows: JSON.parse(JSON.stringify(currentLegRows)),
+        gameFinished: gameFinished
+      });
+
+      const previous = history.pop();
+      scores = [...previous.scores];
+      darts = [...previous.darts];
+      currentPlayer = previous.currentPlayer;
+      currentLegRows = JSON.parse(JSON.stringify(previous.currentLegRows));
+      gameFinished = previous.gameFinished;
+
+      updateGameScreen();
+      setStatus("Vorige beurt hersteld.", "info");
+      clearInput();
+    }
+
+    function redoTurn() {
+      if (redoHistory.length === 0 || gameFinished) {
+        setStatus("Er is geen volgende beurt om te herstellen.", "error");
+        return;
+      }
+
+      history.push({
+        scores: [...scores],
+        darts: [...darts],
+        currentPlayer: currentPlayer,
+        currentLegRows: JSON.parse(JSON.stringify(currentLegRows)),
+        gameFinished: gameFinished
+      });
+
+      const next = redoHistory.pop();
+      scores = [...next.scores];
+      darts = [...next.darts];
+      currentPlayer = next.currentPlayer;
+      currentLegRows = JSON.parse(JSON.stringify(next.currentLegRows));
+      gameFinished = next.gameFinished;
+
+      updateGameScreen();
+      setStatus("Volgende beurt hersteld.", "info");
+      clearInput();
+    }
+
+    function showDetails() {
+      const detailContent = document.getElementById("detailContent");
+      detailContent.innerHTML = "";
+
+      if (allLegs.length === 0) {
+        detailContent.innerHTML = "<p class='detail-note'>Geen details beschikbaar.</p>";
+        showScreen("detailScreen");
+        return;
+      }
+
+      allLegs.forEach(leg => {
+        const block = document.createElement("div");
+        block.className = "detail-block";
+
+        let html = "";
+        html += "<div class='detail-title'>Leg " + leg.legNumber + " - winnaar: " + leg.winnerName + "</div>";
+        html += "<table>";
+        html += "<thead>";
+        html += "<tr>";
+        html += "<th>Score " + players[0] + "</th>";
+        html += "<th>Gegooid</th>";
+        html += "<th>Score " + players[1] + "</th>";
+        html += "<th>Gegooid</th>";
+        html += "</tr>";
+        html += "</thead>";
+        html += "<tbody>";
+
+        const p1Rows = leg.rows.filter(row => row.p1Throw !== "");
+        const p2Rows = leg.rows.filter(row => row.p2Throw !== "");
+        const maxRows = Math.max(p1Rows.length, p2Rows.length);
+
+        for (let i = 0; i < maxRows; i++) {
+          const r1 = p1Rows[i] || { p1Before: "", p1Throw: "" };
+          const r2 = p2Rows[i] || { p2Before: "", p2Throw: "" };
+
+          html += "<tr>";
+          html += "<td>" + r1.p1Before + "</td>";
+          html += "<td>" + r1.p1Throw + "</td>";
+          html += "<td>" + r2.p2Before + "</td>";
+          html += "<td>" + r2.p2Throw + "</td>";
+          html += "</tr>";
+        }
+
+        html += "</tbody></table>";
+        block.innerHTML = html;
+        detailContent.appendChild(block);
+      });
+
+      showScreen("detailScreen");
+    }
+
+    function restartMatch() {
+      document.getElementById("player1").value = players[0];
+      document.getElementById("player2").value = players[1];
+      showScreen("startScreen");
+    }
+  </script>
+</body>
+</html>
