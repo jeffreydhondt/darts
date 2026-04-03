@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout training</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #111;
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 14px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 950px;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    h1, h2, p {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .note {
+      font-size: 18px;
+      text-align: center;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    label {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 16px;
+      font-size: 24px;
+      border: 2px solid #bbb;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .big-box {
+      background: #eef5ff;
+      border: 4px solid #1f6feb;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .small-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .small-box {
+      background: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .label {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .value-big {
+      font-size: 96px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .value-medium {
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    .value-small {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .turn-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      text-align: center;
+      border: 2px solid #ddd;
+    }
+
+    .checkout-help {
+      background: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .checkout-help-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .checkout-help-value {
+      font-size: 30px;
+      font-weight: bold;
+      color: #1f6feb;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 18px;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      color: white;
+      min-width: 140px;
+    }
+
+    .btn.green {
+      background: #148a3b;
+    }
+
+    .btn.blue {
+      background: #1f6feb;
+    }
+
+    .btn.gray {
+      background: #666;
+    }
+
+    .btn.red {
+      background: #b42318;
+    }
+
+    .status {
+      min-height: 34px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .status.error {
+      color: #b42318;
+    }
+
+    .status.success {
+      color: #148a3b;
+    }
+
+    .status.info {
+      color: #1f6feb;
+    }
+
+    .history-box {
+      background: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .history-title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    th {
+      background: #eef5ff;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      .small-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .value-big {
+        font-size: 78px;
+      }
+
+      .value-medium {
+        font-size: 34px;
+      }
+
+      .value-small {
+        font-size: 22px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      th, td {
+        font-size: 13px;
+        padding: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="startScreen" class="screen active">
+    <div class="card">
+      <h1>Checkout training</h1>
+      <p class="note">
+        Kies een startwaarde. Uit in 1 beurt = volgende checkout +10.
+        Meer dan 1 beurt nodig = volgende checkout -1.
+      </p>
+
+      <div class="row">
+        <div class="col">
+          <label for="startValueInput">Startwaarde</label>
+          <input type="number" id="startValueInput" min="2" max="170" value="50">
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn green" onclick="startTraining()">Start training</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="trainingScreen" class="screen">
+    <div class="card">
+      <h1>Checkout training</h1>
+      <p class="note">
+        Uit in 1 beurt = volgende checkout +10.
+        Meer dan 1 beurt nodig = volgende checkout -1.
+      </p>
+
+      <div class="big-box">
+        <div class="label">Nog uit te gooien</div>
+        <div id="remainingValue" class="value-big">50</div>
+        <div class="value-small">Doelcheckout: <span id="targetValue">50</span></div>
+      </div>
+
+      <div class="small-grid">
+        <div class="small-box">
+          <div class="label">Aantal beurten</div>
+          <div id="turnsUsedValue" class="value-medium">0</div>
+        </div>
+        <div class="small-box">
+          <div class="label">Afgewerkte checkouts</div>
+          <div id="completedValue" class="value-medium">0</div>
+        </div>
+      </div>
+
+      <div class="checkout-help">
+        <div class="checkout-help-title">Checkout hulp</div>
+        <div id="checkoutHelpValue" class="checkout-help-value">-</div>
+      </div>
+
+      <div class="turn-box">
+        <div class="label">Geef de score van de beurt in</div>
+        <input type="number" id="turnScoreInput" min="0" max="180" placeholder="bv. 60" onkeydown="handleEnter(event)">
+      </div>
+
+      <div class="button-group">
+        <button class="btn green" onclick="submitScore()">Enter</button>
+        <button class="btn blue" onclick="bustedTurn()">Busted</button>
+        <button class="btn gray" onclick="undoTurn()">Undo</button>
+        <button class="btn gray" onclick="redoTurn()">Redo</button>
+        <button class="btn red" onclick="resetTraining()">Reset training</button>
+      </div>
+
+      <div id="statusMessage" class="status"></div>
+
+      <div class="history-box">
+        <div class="history-title">Overzicht</div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Checkout</th>
+              <th>Beurten</th>
+              <th>Volgende checkout</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr>
+              <td colspan="4">Nog geen checkouts afgewerkt.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MIN_CHECKOUT = 2;
+    const MAX_CHECKOUT = 170;
+
+    const VALID_CHECKOUTS = new Set([
+      170,167,164,161,160,158,157,156,155,154,153,152,151,150,149,148,147,146,145,144,
+      143,142,141,140,139,138,137,136,135,134,133,132,131,130,129,128,127,126,125,124,
+      123,122,121,120,119,118,117,116,115,114,113,112,111,110,109,108,107,106,105,104,
+      103,102,101,100,99,98,97,96,95,94,93,92,91,90,89,88,87,86,85,84,83,82,81,80,79,78,
+      77,76,75,74,73,72,71,70,69,68,67,66,65,64,63,62,61,60,59,58,57,56,55,54,53,52,51,
+      50,49,48,47,46,45,44,43,42,41,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,
+      23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2
+    ]);
+
+    const CHECKOUT_HELP = {
+      170: "T20 T20 Bull",
+      167: "T20 T19 Bull",
+      164: "T20 T18 Bull",
+      161: "T20 T17 Bull",
+      160: "T20 T20 D20",
+      158: "T20 T20 D19",
+      157: "T20 T19 D20",
+      156: "T20 T20 D18",
+      155: "T20 T19 D19",
+      154: "T20 T18 D20",
+      153: "T20 T19 D18",
+      152: "T20 T20 D16",
+      151: "T20 T17 D20",
+      150: "T20 T18 D18",
+      149: "T20 T19 D16",
+      148: "T20 T16 D20",
+      147: "T20 T17 D18",
+      146: "T20 T18 D16",
+      145: "T20 T15 D20",
+      144: "T20 T20 D12",
+      143: "T20 T17 D16",
+      142: "T20 T14 D20",
+      141: "T20 T19 D12",
+      140: "T20 T20 D10",
+      139: "T20 T13 D20",
+      138: "T20 T18 D12",
+      137: "T20 T19 D10",
+      136: "T20 T20 D8",
+      135: "Bull T15 D20",
+      134: "T20 T14 D16",
+      133: "T20 T19 D8",
+      132: "Bull Bull D16",
+      131: "T20 T13 D16",
+      130: "T20 T20 D5",
+      129: "T19 T16 D12",
+      128: "T18 T14 D16",
+      127: "T20 T17 D8",
+      126: "T19 T19 D6",
+      125: "Bull T15 D15",
+      124: "T20 T16 D8",
+      123: "T19 T16 D9",
+      122: "T18 T18 D7",
+      121: "T20 T11 D14",
+      120: "T20 20 D20",
+      119: "T19 T12 D13",
+      118: "T20 18 D20",
+      117: "T20 17 D20",
+      116: "T20 16 D20",
+      115: "T20 15 D20",
+      114: "T20 14 D20",
+      113: "T20 13 D20",
+      112: "T20 12 D20",
+      111: "T20 11 D20",
+      110: "T20 10 D20",
+      109: "T20 9 D20",
+      108: "T20 8 D20",
+      107: "T19 10 D20",
+      106: "T20 6 D20",
+      105: "T20 5 D20",
+      104: "T18 10 D20",
+      103: "T19 6 D20",
+      102: "T20 10 D16",
+      101: "T17 10 D20",
+      100: "T20 D20",
+      99: "T19 10 D16",
+      98: "T20 D19",
+      97: "T19 D20",
+      96: "T20 D18",
+      95: "T19 D19",
+      94: "T18 D20",
+      93: "T19 D18",
+      92: "T20 D16",
+      91: "T17 D20",
+      90: "T18 D18",
+      89: "T19 D16",
+      88: "T16 D20",
+      87: "T17 D18",
+      86: "T18 D16",
+      85: "T15 D20",
+      84: "T20 D12",
+      83: "T17 D16",
+      82: "Bull D16",
+      81: "T19 D12",
+      80: "T20 D10",
+      79: "T13 D20",
+      78: "T18 D12",
+      77: "T19 D10",
+      76: "T20 D8",
+      75: "Bull D12",
+      74: "T14 D16",
+      73: "T19 D8",
+      72: "T16 D12",
+      71: "T13 D16",
+      70: "T18 D8",
+      69: "T19 D6",
+      68: "T20 D4",
+      67: "T17 D8",
+      66: "T10 D18",
+      65: "25 D20",
+      64: "T16 D8",
+      63: "T13 D12",
+      62: "T10 D16",
+      61: "T15 D8",
+      60: "20 D20",
+      59: "19 D20",
+      58: "18 D20",
+      57: "17 D20",
+      56: "16 D20",
+      55: "15 D20",
+      54: "14 D20",
+      53: "13 D20",
+      52: "12 D20",
+      51: "11 D20",
+      50: "10 D20 of Bull",
+      49: "9 D20",
+      48: "16 D16",
+      47: "15 D16",
+      46: "6 D20",
+      45: "13 D16",
+      44: "12 D16",
+      43: "11 D16",
+      42: "10 D16",
+      41: "9 D16",
+      40: "D20",
+      39: "7 D16",
+      38: "D19",
+      37: "5 D16",
+      36: "D18",
+      35: "3 D16",
+      34: "D17",
+      33: "1 D16",
+      32: "D16",
+      31: "15 D8",
+      30: "D15",
+      29: "13 D8",
+      28: "D14",
+      27: "11 D8",
+      26: "D13",
+      25: "9 D8",
+      24: "D12",
+      23: "7 D8",
+      22: "D11",
+      21: "5 D8",
+      20: "D10",
+      19: "3 D8",
+      18: "D9",
+      17: "1 D8",
+      16: "D8",
+      15: "7 D4",
+      14: "D7",
+      13: "5 D4",
+      12: "D6",
+      11: "3 D4",
+      10: "D5",
+      9: "1 D4",
+      8: "D4",
+      7: "3 D2",
+      6: "D3",
+      5: "1 D2",
+      4: "D2",
+      3: "1 D1",
+      2: "D1"
+    };
+
+    let startTarget = 50;
+    let targetCheckout = 50;
+    let remaining = 50;
+    let turnsUsed = 0;
+    let completedCount = 0;
+    let sessionHistory = [];
+    let history = [];
+    let redoHistory = [];
+
+    function snapshotState() {
+      return {
+        startTarget: startTarget,
+        targetCheckout: targetCheckout,
+        remaining: remaining,
+        turnsUsed: turnsUsed,
+        completedCount: completedCount,
+        sessionHistory: JSON.parse(JSON.stringify(sessionHistory))
+      };
+    }
+
+    function restoreState(state) {
+      startTarget = state.startTarget;
+      targetCheckout = state.targetCheckout;
+      remaining = state.remaining;
+      turnsUsed = state.turnsUsed;
+      completedCount = state.completedCount;
+      sessionHistory = JSON.parse(JSON.stringify(state.sessionHistory));
+      updateScreen();
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+      });
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function startTraining() {
+      const input = document.getElementById("startValueInput").value.trim();
+      const value = Number(input);
+
+      if (!Number.isInteger(value) || value < MIN_CHECKOUT || value > MAX_CHECKOUT) {
+        alert("Geef een geldige startwaarde in tussen 2 en 170.");
+        return;
+      }
+
+      startTarget = value;
+      targetCheckout = value;
+      remaining = value;
+      turnsUsed = 0;
+      completedCount = 0;
+      sessionHistory = [];
+      history = [];
+      redoHistory = [];
+
+      updateScreen();
+      setStatus("Training gestart op " + value + ".", "info");
+      showScreen("trainingScreen");
+      document.getElementById("turnScoreInput").focus();
+    }
+
+    function setStatus(message, type = "") {
+      const status = document.getElementById("statusMessage");
+      status.textContent = message;
+      status.className = "status";
+      if (type) {
+        status.classList.add(type);
+      }
+    }
+
+    function clearInput() {
+      const input = document.getElementById("turnScoreInput");
+      input.value = "";
+      input.focus();
+    }
+
+    function handleEnter(event) {
+      if (event.key === "Enter") {
+        submitScore();
+      }
+    }
+
+    function canCheckout(score) {
+      return VALID_CHECKOUTS.has(score);
+    }
+
+    function normalizeTarget(value) {
+      if (value < MIN_CHECKOUT) {
+        return MIN_CHECKOUT;
+      }
+      if (value > MAX_CHECKOUT) {
+        return MAX_CHECKOUT;
+      }
+      return value;
+    }
+
+    function getCheckoutHelp(score) {
+      if (CHECKOUT_HELP[score]) {
+        return CHECKOUT_HELP[score];
+      }
+      if (score === 1 || score < 2 || score > 170) {
+        return "Geen geldige finish";
+      }
+      if (!VALID_CHECKOUTS.has(score)) {
+        return "Geen geldige finish";
+      }
+      return "Finish mogelijk";
+    }
+
+    function completeCheckout() {
+      const oldTarget = targetCheckout;
+      let nextTarget = targetCheckout;
+
+      if (turnsUsed <= 1) {
+        nextTarget = normalizeTarget(targetCheckout + 10);
+      } else {
+        nextTarget = normalizeTarget(targetCheckout - 1);
+      }
+
+      sessionHistory.push({
+        number: completedCount + 1,
+        checkout: oldTarget,
+        turns: turnsUsed,
+        nextCheckout: nextTarget
+      });
+
+      completedCount += 1;
+      targetCheckout = nextTarget;
+      remaining = nextTarget;
+      turnsUsed = 0;
+
+      updateScreen();
+
+      if (nextTarget === MAX_CHECKOUT && oldTarget + 10 > MAX_CHECKOUT) {
+        setStatus("Checkout afgewerkt. Volgende checkout is 170 (maximum bereikt).", "success");
+      } else if (nextTarget === MIN_CHECKOUT && oldTarget - 1 < MIN_CHECKOUT) {
+        setStatus("Checkout afgewerkt. Volgende checkout is 2 (minimum bereikt).", "success");
+      } else {
+        setStatus("Checkout afgewerkt. Nieuwe checkout: " + nextTarget, "success");
+      }
+
+      clearInput();
+    }
+
+    function submitScore() {
+      const input = document.getElementById("turnScoreInput");
+      const value = input.value.trim();
+
+      if (value === "") {
+        setStatus("Geef een score in.", "error");
+        return;
+      }
+
+      const turnScore = Number(value);
+
+      if (!Number.isInteger(turnScore)) {
+        setStatus("Ongeldige invoer.", "error");
+        clearInput();
+        return;
+      }
+
+      if (turnScore < 0) {
+        setStatus("Score kan niet negatief zijn.", "error");
+        clearInput();
+        return;
+      }
+
+      if (turnScore > 180) {
+        setStatus("Maximale score is 180.", "error");
+        clearInput();
+        return;
+      }
+
+      const newRemaining = remaining - turnScore;
+
+      if (newRemaining < 0) {
+        setStatus("Deze score kan niet. Gebruik Busted voor de beurt.", "error");
+        clearInput();
+        return;
+      }
+
+      if (newRemaining === 1) {
+        setStatus("Je mag niet op 1 uitkomen. Gebruik Busted.", "error");
+        clearInput();
+        return;
+      }
+
+      if (newRemaining === 0 && !canCheckout(remaining)) {
+        setStatus("Deze checkout is zo niet geldig. Gebruik Busted.", "error");
+        clearInput();
+        return;
+      }
+
+      redoHistory = [];
+      history.push(snapshotState());
+
+      turnsUsed += 1;
+      remaining = newRemaining;
+
+      updateScreen();
+
+      if (remaining === 0) {
+        completeCheckout();
+        return;
+      }
+
+      setStatus("Nog uit te gooien: " + remaining, "info");
+      clearInput();
+    }
+
+    function bustedTurn() {
+      redoHistory = [];
+      history.push(snapshotState());
+
+      turnsUsed += 1;
+
+      updateScreen();
+      setStatus("Busted. Checkout blijft op " + remaining + ".", "error");
+      clearInput();
+    }
+
+    function undoTurn() {
+      if (history.length === 0) {
+        setStatus("Er is geen vorige stap om te herstellen.", "error");
+        return;
+      }
+
+      redoHistory.push(snapshotState());
+      const previous = history.pop();
+      restoreState(previous);
+      setStatus("Vorige stap hersteld.", "info");
+      clearInput();
+    }
+
+    function redoTurn() {
+      if (redoHistory.length === 0) {
+        setStatus("Er is geen volgende stap om te herstellen.", "error");
+        return;
+      }
+
+      history.push(snapshotState());
+      const next = redoHistory.pop();
+      restoreState(next);
+      setStatus("Volgende stap hersteld.", "info");
+      clearInput();
+    }
+
+    function resetTraining() {
+      targetCheckout = startTarget;
+      remaining = startTarget;
+      turnsUsed = 0;
+      completedCount = 0;
+      sessionHistory = [];
+      history = [];
+      redoHistory = [];
+
+      updateScreen();
+      setStatus("Training opnieuw gestart op " + startTarget + ".", "info");
+      clearInput();
+    }
+
+    function updateScreen() {
+      document.getElementById("targetValue").textContent = targetCheckout;
+      document.getElementById("remainingValue").textContent = remaining;
+      document.getElementById("turnsUsedValue").textContent = turnsUsed;
+      document.getElementById("completedValue").textContent = completedCount;
+      document.getElementById("checkoutHelpValue").textContent = getCheckoutHelp(remaining);
+
+      const historyBody = document.getElementById("historyBody");
+      historyBody.innerHTML = "";
+
+      if (sessionHistory.length === 0) {
+        historyBody.innerHTML = "<tr><td colspan='4'>Nog geen checkouts afgewerkt.</td></tr>";
+        return;
+      }
+
+      sessionHistory.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML =
+          "<td>" + item.number + "</td>" +
+          "<td>" + item.checkout + "</td>" +
+          "<td>" + item.turns + "</td>" +
+          "<td>" + item.nextCheckout + "</td>";
+        historyBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
